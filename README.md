@@ -14,7 +14,13 @@ Easily deploy your terraform files to AWS with just a push to GitHub!
 ### Prerequisites
 
     All requirements are automatically downloaded and installed by the GitRunner machine.  
+    
+## How it works
 
+1. Whenever a new `.tf` file is added/deleted/modified on the main branch the GitHub Runner will trigger
+2. The GitHub Runner will download and install all the prequisties and run the included python script `deploy.py`
+3. The Python script will authenticate and deploy/modify/tear-down any infrastructure
+4. The Terraform State must be stored remotely ideally in AWS S3 
 
 ## Built With
 
