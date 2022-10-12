@@ -1,0 +1,37 @@
+name: Deploy or Update Terraforms
+  on:
+    workflow_dispatch:
+    push:
+      branches: [ main ]
+      paths:
+        - '**main.tf'
+
+  env:
+    TF_VAR_AWS_ACCESS_KEY: ${{secrets.AWS_ACCESS_KEY}} # Set the VM ENV Variables to the secrets
+    TF_VAR_AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+    AWS_DEFAULT_REGION: us-east-1
+  jobs:
+    UpdatesAndDeployments:
+      runs-on: ubuntu-latest
+      steps:
+        - name: checkout repo content
+          uses: actions/checkout@v2 # checkout the repository content to github runner.
+          with:
+            fetch-depth: 0
+            ref: main
+
+        - name: install-aws-cli-action # install AWS CLI
+          uses: unfor19/install-aws-cli-action@v1.0.2
+          with:
+            version: 2.5.2
+            verbose: true
+
+        - name: Install Terraform
+          run: |
+            sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
+            curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+            sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+            sudo apt-get update && sudo apt-get install terraform
+        - name: run-python-script # runs the python script
+          run: |
+            python deploy.py
